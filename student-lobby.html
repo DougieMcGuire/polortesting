@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting for Host - Polor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Polor - Main Stylesheet */
+
+        /* CSS Variables */
+        :root {
+            /* Primary Colors */
+            --primary-blue: #52C4F5;
+            --primary-blue-dark: #3BA8D1;
+            
+            /* Answer Button Colors */
+            --answer-red: #FF6B6B;
+            --answer-yellow: #FFE66D;
+            --answer-blue: #4ECDC4;
+            --answer-green: #45B7D1;
+            
+            /* Accent Colors */
+            --success-green: #51CF66;
+            --error-red: #FF6B6B;
+            --warning-orange: #FF922B;
+            --purple-accent: #9775FA;
+            --pink-accent: #F783AC;
+            
+            /* Neutrals */
+            --white: #FFFFFF;
+            --black: #000000;
+            --light-blue: #E3F2FD;
+            --gray-100: #F8F9FA;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-400: #CED4DA;
+            --gray-500: #ADB5BD;
+            --gray-600: #6C757D;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --gray-900: #212529;
+            
+            /* Typography */
+            --font-primary: 'Fredoka', sans-serif;
+            --font-dyslexia: 'OpenDyslexic', sans-serif;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #87CEEB 100%);
+            min-height: 100vh;
+            color: var(--black);
+            overflow-x: hidden;
+        }
+
+        /* Dyslexia Font Toggle */
+        body.dyslexia-font {
+            font-family: var(--font-dyslexia);
+        }
+
+        /* Student Lobby */
+        .student-lobby-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: var(--spacing-lg);
+            gap: var(--spacing-xl);
+        }
+
+        .waiting-message {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .waiting-message h2 {
+            font-size: 2rem;
+            text-shadow: 2px 2px 0 var(--black);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .loading-animation {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+        }
+
+        .loading-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--white);
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .drawing-canvas-container {
+            background: var(--white);
+            border: 4px solid var(--black);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        #drawing-canvas {
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            background: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary-blue);
+            transform: scale(1.05);
+        }
+
+        .tool-btn.active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Loading Screen */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--gray-300);
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loading-text {
+            color: var(--gray-700);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            z-index: 10000;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary-blue);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification-success {
+            border-left-color: var(--success-green);
+        }
+
+        .notification-error {
+            border-left-color: var(--error-red);
+        }
+
+        .notification-warning {
+            border-left-color: var(--warning-orange);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .student-lobby-container {
+                padding: var(--spacing-md);
+            }
+            
+            .drawing-canvas-container {
+                padding: var(--spacing-md);
+            }
+            
+            #drawing-canvas {
+                width: 100%;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="student-lobby-container">
+        <div class="waiting-message">
+            <h2>Waiting for host to start...</h2>
+            <div class="loading-animation">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>
+        </div>
+        
+        <div class="drawing-canvas-container">
+            <canvas id="drawing-canvas" width="400" height="300"></canvas>
+            <div class="drawing-tools">
+                <button class="tool-btn active" data-tool="pencil">✏️</button>
+                <button class="tool-btn" data-tool="eraser">🧽</button>
+                <button class="tool-btn" data-tool="clear">🗑️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Polor Configuration
+        const CONFIG = {
+            // Firebase Configuration
+            firebase: {
+                apiKey: "AIzaSyBYcuke7uz4kAQzMjUpEqbY6zvwOiY9C1k",
+                authDomain: "polorapi.firebaseapp.com",
+                databaseURL: "https://polorapi-default-rtdb.firebaseio.com",
+                projectId: "polorapi",
+                storageBucket: "polorapi.firebasestorage.app",
+                messagingSenderId: "945305666819",
+                appId: "1:945305666819:web:a3c535e6cb9273882a1536",
+                measurementId: "G-PQ0J44YZTN"
+            }
+        };
+
+        // Utility managers
+        const LoadingManager = {
+            show: function(text = 'Loading...') {
+                const loadingScreen = document.getElementById('loading-screen');
+                const loadingText = document.getElementById('loading-text');
+                if (loadingText) loadingText.textContent = text;
+                if (loadingScreen) loadingScreen.style.display = 'flex';
+            },
+            hide: function() {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) loadingScreen.style.display = 'none';
+            }
+        };
+
+        const NotificationManager = {
+            show: function(message, type = 'info') {
+                const container = document.getElementById('notification-container');
+                if (!container) return;
+                
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = message;
+                
+                container.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            },
+            
+            success: function(message) {
+                this.show(message, 'success');
+            },
+            
+            error: function(message) {
+                this.show(message, 'error');
+            },
+            
+            warning: function(message) {
+                this.show(message, 'warning');
+            }
+        };
+
+        // DOM Utilities
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+
+        // Polor Firebase Integration
+        class FirebaseManager {
+            constructor() {
+                this.app = null;
+                this.auth = null;
+                this.database = null;
+                this.storage = null;
+                this.currentUser = null;
+                this.init();
+            }
+            
+            init() {
+                // Check if Firebase is available
+                if (typeof firebase === 'undefined') {
+                    console.warn('Firebase not loaded, retrying in 100ms...');
+                    setTimeout(() => this.init(), 100);
+                    return;
+                }
+                
+                try {
+                    // Initialize Firebase
+                    this.app = firebase.initializeApp(CONFIG.firebase);
+                    this.auth = firebase.auth();
+                    this.database = firebase.database();
+                    this.storage = firebase.storage();
+                    
+                    // Set up auth state listener
+                    this.auth.onAuthStateChanged((user) => {
+                        this.currentUser = user;
+                        this.handleAuthStateChange(user);
+                    });
+                    
+                    console.log('Firebase initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize Firebase:', error);
+                    // Retry initialization
+                    setTimeout(() => this.init(), 1000);
+                }
+            }
+            
+            // Handle authentication state changes
+            handleAuthStateChange(user) {
+                if (user) {
+                    console.log('User signed in:', user.uid);
+                } else {
+                    console.log('User signed out');
+                }
+            }
+            
+            // Get current user
+            getCurrentUser() {
+                return this.currentUser;
+            }
+            
+            // Check if user is authenticated
+            isAuthenticated() {
+                return !!this.currentUser;
+            }
+            
+            // Listen to game
+            listenToGame(gameId, callback) {
+                const gameRef = this.database.ref(`games/${gameId}`);
+                
+                gameRef.on('value', (snapshot) => {
+                    const gameData = snapshot.val();
+                    if (gameData) {
+                        callback(gameData);
+                    }
+                });
+                
+                return () => gameRef.off('value');
+            }
+        }
+
+        // Initialize global Firebase manager
+        window.firebaseManager = new FirebaseManager();
+
+        // Student Lobby JavaScript
+        class StudentLobbyManager {
+            constructor() {
+                this.gameId = null;
+                this.studentId = null;
+                this.gameData = null;
+                this.unlistenGame = null;
+                this.init();
+            }
+            
+            init() {
+                // Get game ID and student ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                this.gameId = urlParams.get('gameId');
+                this.studentId = urlParams.get('studentId');
+                
+                if (!this.gameId || !this.studentId) {
+                    NotificationManager.error('Invalid game session');
+                    window.location.href = 'join.html';
+                    return;
+                }
+                
+                // Check if Firebase is available
+                if (typeof window.firebaseManager === 'undefined' || !window.firebaseManager.app) {
+                    console.log('Firebase not ready, waiting...');
+                    setTimeout(() => this.init(), 100);
+                    return;
+                }
+                
+                this.setupDrawingCanvas();
+                this.setupGameListeners();
+                LoadingManager.hide();
+            }
+            
+            // Setup game listeners
+            setupGameListeners() {
+                // Listen to game status changes
+                this.unlistenGame = firebaseManager.listenToGame(this.gameId, (game) => {
+                    this.gameData = game;
+                    
+                    if (game.status === 'active') {
+                        this.startGameplay();
+                    } else if (game.status === 'ended') {
+                        this.handleGameEnded();
+                    }
+                });
+            }
+            
+            // Start gameplay
+            startGameplay() {
+                // Redirect to game screen
+                window.location.href = `game.html?gameId=${this.gameId}&studentId=${this.studentId}`;
+            }
+            
+            // Handle game ended
+            handleGameEnded() {
+                NotificationManager.warning('The game has ended');
+                window.location.href = 'landing.html';
+            }
+            
+            // Setup drawing canvas
+            setupDrawingCanvas() {
+                const canvas = $('#drawing-canvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let currentTool = 'pencil';
+                
+                // Set canvas background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Drawing events
+                canvas.addEventListener('mousedown', (e) => {
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!isDrawing) return;
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    if (currentTool === 'pencil') {
+                        ctx.lineWidth = 2;
+                        ctx.lineCap = 'round';
+                        ctx.strokeStyle = '#000000';
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    } else if (currentTool === 'eraser') {
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.lineWidth = 10;
+                        ctx.lineCap = 'round';
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                        ctx.globalCompositeOperation = 'source-over';
+                    }
+                });
+                
+                canvas.addEventListener('mouseup', () => {
+                    isDrawing = false;
+                });
+                
+                // Touch events for mobile
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    
+                    isDrawing = true;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!isDrawing) return;
+                    
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    
+                    if (currentTool === 'pencil') {
+                        ctx.lineWidth = 2;
+                        ctx.lineCap = 'round';
+                        ctx.strokeStyle = '#000000';
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    } else if (currentTool === 'eraser') {
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.lineWidth = 10;
+                        ctx.lineCap = 'round';
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                        ctx.globalCompositeOperation = 'source-over';
+                    }
+                });
+                
+                canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    isDrawing = false;
+                });
+                
+                // Tool buttons
+                $$('.tool-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        $$('.tool-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentTool = btn.dataset.tool;
+                        
+                        if (currentTool === 'clear') {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.fillStyle = 'white';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        }
+                    });
+                });
+            }
+            
+            // Clean up
+            cleanup() {
+                if (this.unlistenGame) {
+                    this.unlistenGame();
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.studentLobbyManager = new StudentLobbyManager();
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.studentLobbyManager) {
+                window.studentLobbyManager.cleanup();
+            }
+        });
+
+        // Fallback to hide loading screen after 3 seconds
+        setTimeout(() => {
+            if (document.getElementById('loading-screen')) {
+                LoadingManager.hide();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
